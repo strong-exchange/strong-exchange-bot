@@ -11,4 +11,7 @@ class Currency(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.date} | {self.base} to {self.target} - {self.rate}"
+        return f"{self.date.day} | {self.base} to {self.target} - {self.rate}"
+
+    class Meta:
+        unique_together = (('base', 'target', 'rate', 'date',),)
