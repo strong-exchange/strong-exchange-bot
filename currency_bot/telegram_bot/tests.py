@@ -99,7 +99,7 @@ class TestTelegramWebhook(TestCase):
             content_type='application/json'
         )
 
-    start_message_payload = {
+    update_start_payload = {
         'update_id': 496375863,
         'message': {
             'message_id': 1,
@@ -127,9 +127,9 @@ class TestTelegramWebhook(TestCase):
         self.assertEqual(200, response.status_code)
 
     @responses.activate
-    def test_can_process_incoming_message_start(self):
+    def test_can_process_update_start(self):
         response = self.client.post(
-            '/telegram/webhook/', data=self.start_message_payload, content_type='application/json',
+            '/telegram/webhook/', data=self.update_start_payload, content_type='application/json',
         )
         self.assertEqual(response.status_code, 200)
 
@@ -139,4 +139,15 @@ class TestTelegramWebhook(TestCase):
             telegram_message_api_response['chat_id']
         )
 
-    # ToDo: not process messages twice
+    @responses.activate
+    def test_not_process_incoming_message_twice(self):
+        response = self.client.post(
+            '/telegram/webhook/', data=self.update_start_payload, content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(
+            '/telegram/webhook/', data=self.update_start_payload, content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(1, len(responses.calls))
