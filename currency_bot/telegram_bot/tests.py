@@ -112,18 +112,18 @@ class TestTelegramWebhook(TestCase):
     }
 
     def test_if_request_webhook_api_without_telegram_secret_path_not_get_404_error_if_secret_path_not_required(self):
-        response = self.client.post('/telegram/webhook/')
+        response = self.client.post('/telegram/webhook/', content_type='application/json',)
         self.assertEqual(200, response.status_code)
 
     @override_settings(TELEGRAM_SECRET_PATH='secret_path')
     def test_if_request_webhook_api_without_telegram_secret_path_get_404_error_if_secret_path_required(self):
-        response = self.client.post('/telegram/webhook/')
+        response = self.client.post('/telegram/webhook/', content_type='application/json',)
         self.assertEqual(404, response.status_code)
 
-        response = self.client.post('/telegram/webhook/wrong_secret_path/')
+        response = self.client.post('/telegram/webhook/wrong_secret_path/', content_type='application/json',)
         self.assertEqual(404, response.status_code)
 
-        response = self.client.post('/telegram/webhook/secret_path/')
+        response = self.client.post('/telegram/webhook/secret_path/', content_type='application/json',)
         self.assertEqual(200, response.status_code)
 
     @responses.activate

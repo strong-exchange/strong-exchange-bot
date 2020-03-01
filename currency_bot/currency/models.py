@@ -7,7 +7,7 @@ class Currency(models.Model):
     base = models.CharField(max_length=3)
     target = models.CharField(max_length=3)
     rate = models.DecimalField(max_digits=15, decimal_places=10)
-    date = models.DateField()
+    date = models.DateField(db_index=True)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

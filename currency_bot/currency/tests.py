@@ -20,41 +20,7 @@ class TestCurrency(TestCase):
                         'SGD': 1.3949288581, 'AUD': 1.520612915, 'ILS': 3.4358810653, 'KRW': 1211.0817219993,
                         'PLN': 3.9332360452}, 'base': 'USD', 'date': '2020-02-27'}
 
-    @staticmethod
-    def create_currency() -> None:
-        Currency.objects.create(
-            base='USD',
-            target='EUR',
-            rate=Decimal('1.2'),
-            date=date(2020, 2, 2),
-        )
-        Currency.objects.create(
-            base='USD',
-            target='USD',
-            rate=Decimal('1'),
-            date=date(2020, 2, 3),
-        )
-        Currency.objects.create(
-            base='USD',
-            target='EUR',
-            rate=Decimal('1.238'),
-            date=date(2020, 2, 3),
-        )
-        Currency.objects.create(
-            base='USD',
-            target='HKD',
-            rate=Decimal('7.7942356804'),
-            date=date(2020, 2, 3),
-        )
-        Currency.objects.create(
-            base='USD',
-            target='RUB',
-            rate=Decimal('65.7654140825'),
-            date=date(2020, 2, 3),
-        )
-
-    @responses.activate
-    def test_load_currency(self):
+    def setUp(self) -> None:
         responses.add(
             responses.GET,
             'https://api.exchangeratesapi.io/latest?base=USD',
@@ -62,10 +28,43 @@ class TestCurrency(TestCase):
             content_type='application/json'
         )
 
+    @staticmethod
+    def create_currency() -> None:
+        Currency.objects.create(
+            base='USD',
+            target='EUR',
+            rate=Decimal('1.2'),
+            date=date(2020, 3, 2),
+        )
+        Currency.objects.create(
+            base='USD',
+            target='USD',
+            rate=Decimal('1'),
+            date=date(2020, 3, 3),
+        )
+        Currency.objects.create(
+            base='USD',
+            target='EUR',
+            rate=Decimal('1.238'),
+            date=date(2020, 3, 3),
+        )
+        Currency.objects.create(
+            base='USD',
+            target='HKD',
+            rate=Decimal('7.7942356804'),
+            date=date(2020, 3, 3),
+        )
+        Currency.objects.create(
+            base='USD',
+            target='RUB',
+            rate=Decimal('65.7654140825'),
+            date=date(2020, 3, 3),
+        )
+
+    @responses.activate
+    def test_load_currency(self):
         currency_qty = Currency.objects.count()
-
-        currencies = load_latest_currency_rates()
-
+        currencies = load_latest_currency_rates(force_reload=True)
         self.assertEqual(currency_qty + 33, Currency.objects.count())
         self.assertEqual(currencies[0].base, 'USD')
         self.assertEqual(currencies[0].target, 'CAD')
@@ -73,31 +72,27 @@ class TestCurrency(TestCase):
 
     @responses.activate
     def test_load_currency_just_once(self):
-        responses.add(
-            responses.GET,
-            'https://api.exchangeratesapi.io/latest?base=USD',
-            json=self.latest,
-            content_type='application/json',
-        )
-
         currency_qty = Currency.objects.count()
 
-        load_latest_currency_rates()
-        load_latest_currency_rates()
-        load_latest_currency_rates()
+        load_latest_currency_rates(True)
+        load_latest_currency_rates(True)
+        load_latest_currency_rates(True)
 
         self.assertEqual(currency_qty + 33, Currency.objects.count())
 
+    @responses.activate
     def test_can_exchange_from_usd_to_eur(self):
         self.create_currency()
         rate = get_exchange_rate('USD', 'EUR')
         self.assertTrue(str(rate).startswith('1.238'))
 
+    @responses.activate
     def test_can_exchange_from_eur_to_usd(self):
         self.create_currency()
         rate = get_exchange_rate('EUR', 'USD')
         self.assertEqual('0.8077544426494345718901453958', str(rate))
 
+    @responses.activate
     def test_can_exchange_hkd_to_rur(self):
         self.create_currency()
         rate = get_exchange_rate('RUB', 'HKD')
