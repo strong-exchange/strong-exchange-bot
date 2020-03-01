@@ -1,6 +1,7 @@
 import json
 import responses
 from django.test import TestCase, override_settings
+from .chat import parse_exchange_line
 from .wrapper import set_webhook
 
 
@@ -138,3 +139,58 @@ class TestTelegramWebhook(TestCase):
             999199923,
             telegram_message_api_response['chat_id']
         )
+
+
+class TestCurrencyExchange(TestCase):
+    def test_can_parse_currency_exchange_line_with_full_specified_names(self):
+        amount, from_, to = parse_exchange_line('10 USD to CAD')
+        self.assertEqual(10, amount)
+        self.assertEqual('USD', from_)
+        self.assertEqual('CAD', to)
+
+    def test_can_parse_currency_exchange_line_with_shortcuts(self):
+        amount, from_, to = parse_exchange_line('$10 to CAD')
+        self.assertEqual(10, amount)
+        self.assertEqual('USD', from_)
+        self.assertEqual('CAD', to)
+
+        amount, from_, to = parse_exchange_line('10 CAD to $')
+        self.assertEqual(10, amount)
+        self.assertEqual('CAD', from_)
+        self.assertEqual('USD', to)
+
+    def test_can_parse_currency_exchange_line_with_decimal_value(self):
+        amount, from_, to = parse_exchange_line('12.7531 USD to CAD')
+        self.assertEqual('12.7531', str(amount))
+        self.assertEqual('USD', from_)
+        self.assertEqual('CAD', to)
+
+    # ToDo: add functionality for parse numbers with semicolon as decimal point indicator
+
+    def test_can_parse_currency_exchange_line_without_whitespaces(self):
+        amount, from_, to = parse_exchange_line('12.7531USDtoCAD')
+        self.assertEqual('12.7531', str(amount))
+        self.assertEqual('USD', from_)
+        self.assertEqual('CAD', to)
+
+    def test_can_parse_currency_exchange_line_register_of_symbols_not_have_meaning(self):
+        amount, from_, to = parse_exchange_line('10 Usd to cAD')
+        self.assertEqual(10, amount)
+        self.assertEqual('USD', from_)
+        self.assertEqual('CAD', to)
+
+    def test_can_parse_currency_exchange_line_without_amount(self):
+        amount, from_, to = parse_exchange_line('USD to CAD')
+        self.assertEqual(1, amount)
+        self.assertEqual('USD', from_)
+        self.assertEqual('CAD', to)
+
+    def test_raise_error_if_cant_parse_currency_exchange_line(self):
+        with self.assertRaises(ValueError):
+            parse_exchange_line('')
+
+        with self.assertRaises(ValueError):
+            parse_exchange_line('USD to')
+
+        with self.assertRaises(ValueError):
+            parse_exchange_line('to USD')

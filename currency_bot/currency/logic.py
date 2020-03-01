@@ -26,6 +26,9 @@ def load_latest_currency_rates() -> list:
 
 def get_exchange_rate(from_: str, to: str) -> Decimal:
     base_currency = 'USD'
+    for currency in (from_, to,):
+        if not Currency.objects.filter(target=currency).exists():
+            raise ValueError(f"Did't have rate for currency {currency}")
 
     if base_currency in (from_, to):
         if from_ == base_currency:

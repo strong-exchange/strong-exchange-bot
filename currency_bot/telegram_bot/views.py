@@ -18,6 +18,8 @@ class TelegramWebhookView(View):
     def post(self, request, *args, **kwargs):
         if request.content_type == 'application/json' and request.body:
             data = json.loads(request.body.decode())
-            process_message(data['message'])
+            message = data.get('message')
+            if message:
+                process_message(message)
 
         return HttpResponse()
