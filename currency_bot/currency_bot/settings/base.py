@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'currency',
+    'telegram_bot',
 ]
 
 MIDDLEWARE = [

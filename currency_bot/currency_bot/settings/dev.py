@@ -1,3 +1,4 @@
+import os
 from .base import *
 
 # Quick-start development settings - unsuitable for production
@@ -21,8 +22,12 @@ DATABASES = {
         'NAME': 'currency_bot',
         'USER': 'currency_bot',
         'PASSWORD': 'currency_bot',
-        # 'HOST': 'localhost',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
+
+# Telegram Token
+
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+TELEGRAM_SECRET_PATH = os.environ.get('TELEGRAM_SECRET_PATH')
