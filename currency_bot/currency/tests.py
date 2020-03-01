@@ -1,10 +1,12 @@
+import json
 from decimal import Decimal
-from datetime import date
+from datetime import date, timedelta
 import responses
 from django.test import TestCase
-from currency.helpers import parse_exchange_line
+from django.utils import timezone
+from currency.helpers import parse_exchange_line, parse_history_line
 from .models import Currency
-from .logic import load_latest_currency_rates, get_exchange_rate
+from .logic import load_latest_currency_rates, get_exchange_rate, get_currency_history
 
 
 class TestCurrency(TestCase):
@@ -102,7 +104,7 @@ class TestCurrency(TestCase):
         self.assertEqual(str(rate), '0.1185157242471316724260511311')
 
 
-class TestCurrencyExchange(TestCase):
+class TestCurrencyExchangeParser(TestCase):
     def test_can_parse_currency_exchange_line_with_full_specified_names(self):
         amount, from_, to = parse_exchange_line('10 USD to CAD')
         self.assertEqual(10, amount)
@@ -155,3 +157,53 @@ class TestCurrencyExchange(TestCase):
 
         with self.assertRaises(ValueError):
             parse_exchange_line('to USD')
+
+
+class TestCurrencyHistory(TestCase):
+
+    def setUp(self) -> None:
+        responses.add(
+            responses.GET,
+            'https://api.exchangeratesapi.io/history?base=USD&symbols=USD%2CCAD&start_at=2019-11-27&end_at=2019-12-03',
+            json={
+                "rates": {
+                    "2019-11-27": {"CAD": 1.3266418385, "USD": 1.0},
+                    "2019-11-28": {"CAD": 1.3289413903, "USD": 1.0},
+                    "2019-12-03": {"CAD": 1.3320386596, "USD": 1.0},
+                    "2019-12-02": {"CAD": 1.3295835979, "USD": 1.0},
+                    "2019-11-29": {"CAD": 1.3307230013, "USD": 1.0}
+                },
+                "start_at": "2019-11-27",
+                "base": "USD",
+                "end_at": "2019-12-03"
+            },
+            content_type='application/json',
+        )
+
+    def test_can_parse_usd_cad_without_specified_days(self):
+        currencies, from_, to = parse_history_line('USD/CAD')
+        self.assertEqual(['USD', 'CAD'], currencies)
+        self.assertEqual(from_, timezone.now().date() - timedelta(days=7))
+        self.assertEqual(to, timezone.now().date())
+
+    def test_can_parse_usd_cad_at_any_register(self):
+        currencies, from_, to = parse_history_line('$/cad')
+        self.assertEqual(['USD', 'CAD'], currencies)
+        self.assertEqual(from_, timezone.now().date() - timedelta(days=7))
+        self.assertEqual(to, timezone.now().date())
+
+    def test_can_parse_usd_cad_with_specified_days(self):
+        currencies, from_, to = parse_history_line('USD/CAD for 10 days')
+        self.assertEqual(['USD', 'CAD'], currencies)
+        self.assertEqual(from_, timezone.now().date() - timedelta(days=10))
+        self.assertEqual(to, timezone.now().date())
+
+    @responses.activate
+    def test_get_currency_history_make_correct_request(self):
+        get_currency_history(['USD', 'CAD'], date(2019, 11, 27), date(2019, 12, 3))
+
+        self.assertEqual(
+            'https://api.exchangeratesapi.io/history?base=USD&symbols=USD%2CCAD&start_at=2019-11-27&end_at=2019-12-03',
+            responses.calls[0].request.url
+        )
+

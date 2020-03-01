@@ -1,6 +1,12 @@
-from currency.logic import load_latest_currency_rates, get_exchange_rate
-from currency.helpers import parse_exchange_line
-from .wrapper import send_message
+import io
+from datetime import datetime
+from matplotlib.figure import Figure
+from currency.logic import load_latest_currency_rates, get_exchange_rate, get_currency_history
+from currency.helpers import parse_exchange_line, parse_history_line
+from .wrapper import send_message, send_photo
+
+
+DATE_FORMAT = '%d %B %Y'
 
 
 def say_hello(message):
@@ -25,7 +31,7 @@ def send_help_information(message):
 
 def send_list_currencies(message):
     currencies = load_latest_currency_rates()
-    answer = f"Currencies for {currencies[0].date.strftime('%d %B %Y')}\n"
+    answer = f"Currencies for {currencies[0].date.strftime(DATE_FORMAT)}\n"
     answer += '\n'.join(f'• {currency.target}: {currency.rate:.2f}' for currency in currencies)
     send_message(message['chat']['id'], answer)
 
@@ -48,12 +54,48 @@ def exchange_currency(message):
     return send_message(chat_id, f'{amount:.2f}  {from_} ~ {exchanged_amount:.2f} {to}')
 
 
+def currency_history(message):
+    chat_id = message['chat']['id']
+    history_message_text = message['text'].lstrip('/history').strip()
+
+    currencies, from_, to = parse_history_line(history_message_text)
+
+    data = get_currency_history(currencies, from_, to)
+
+    if 'rates' not in data:
+        return send_message(chat_id, 'No exchange rate data is available for the selected currency.')
+
+    rates = data['rates']
+    dates = sorted(list(rates.keys()))
+    currency_names = list(rates[dates[0]].keys())
+
+    fig = Figure()
+    ax = fig.subplots()
+
+    for currency_name in currency_names:
+        ax.plot(dates, [1 / rates[date][currency_name] for date in dates], label=currency_name)
+
+    show_date_every = len(dates) // 5 or 1
+    dates_verbose = [
+        datetime.strptime(date, '%Y-%m-%d').strftime('%d.%m.%y') if index % show_date_every == 0 else ''
+        for index, date in enumerate(dates)
+    ]
+    ax.set_xticklabels(dates_verbose)
+
+    buffer = io.BytesIO()
+    fig.legend()
+    fig.savefig(buffer, format='png')
+
+    send_photo(chat_id, buffer.getbuffer())
+
+
 command_mapping = {
     '/start': say_hello,
     '/help': send_help_information,
     '/list': send_list_currencies,
     '/lst': send_list_currencies,
     '/exchange': exchange_currency,
+    '/history': currency_history
 }
 
 

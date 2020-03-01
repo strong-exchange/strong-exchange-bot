@@ -31,3 +31,14 @@ def send_message(chat_id, text, parse_mode='HTML'):
     }
     response = requests.post(f'{get_telegram_bot_url()}sendMessage', json=payload, timeout=5)
     return response.json()
+
+
+def send_photo(chat_id, photo):
+    data = {
+        'chat_id': chat_id,
+    }
+    files = {
+        'photo': photo
+    }
+    response = requests.post(f'{get_telegram_bot_url()}sendPhoto', data=data, files=files, timeout=5)
+    return response.json()

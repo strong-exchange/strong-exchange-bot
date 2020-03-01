@@ -1,4 +1,6 @@
+from datetime import date, timedelta
 from decimal import Decimal
+from django.utils import timezone
 
 
 currency_shortcuts = {
@@ -37,3 +39,21 @@ def parse_exchange_line(text: str) -> (Decimal, str, str):
     if not to:
         raise ValueError("Couldn't parse target currency.")
     return Decimal(amount), from_, to
+
+
+def parse_history_line(text: str) -> (list, date, date):
+    currencies = []
+    days = 7
+    for i in text.upper().split():
+        if '/' in i:
+            currencies = [shortcut_currency.get(currency, currency) for currency in i.split('/')]
+        if i.isdigit():
+            days = int(i)
+
+    if not currencies:
+        raise ValueError("Couldn't parse currencies")
+
+    to = timezone.now().date()
+    from_ = to - timedelta(days=days)
+
+    return currencies, from_, to
