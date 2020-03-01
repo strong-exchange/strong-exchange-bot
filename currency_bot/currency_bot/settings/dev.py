@@ -10,7 +10,7 @@ SECRET_KEY = 'hyj1_a$idj45a*_zq%-$zo33nyz8u1c(f^d58_p5whx#ugic^x'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['eeb52188.ngrok.io']
+ALLOWED_HOSTS = []
 
 
 # Database
