@@ -2,15 +2,17 @@
 
 ## What is it
 
-It's bot which can offer various information about the rate of currencies
+It's a telegram bot which can offer various information about the rate of currencies
 
-## Local development
+## Development
 
-1. You must had installed python 3.7 and postgres
+### Local development
 
-2. In postgres create user and database as described in `currency_bot/settings/dev.py`
+1. You must have installed the python 3.7 and the Postgres
 
-3. Install requirements 
+2. In the Postgres create a user and a database. Don't forget set this information to settings.
+
+3. Install the requirements
     
     `pip install -r requirments.txt`
  
@@ -18,12 +20,56 @@ It's bot which can offer various information about the rate of currencies
     
     `export TELEGRAM_TOKEN=_your_token_`
        
-5. Run test server
+5. Run the test server
 
     `python currency_bot/manage.py runserver`
     
-6. For expose locale server port outside you can use [ngrok](https://ngrok.com/).
+6. For expose the locale server port outside you can use [ngrok](https://ngrok.com/).
     
-7. For registering webhook you can use command
+7. For registering the webhook you can use next command
 
     `python currency_bot/manage.py set_telegram_webhook https://example.com/`
+
+### Development in the container
+
+1. Build the image
+ 
+    `docker build -f Dockerfile . --tag currency-bot`
+
+2. Run a container with the host network
+
+    `docker run --rm -it --network host currency-bot` 
+
+## Deployment
+
+### Settings
+
+Don't forget to set the next environment variables if you use `currency_bot.settings.container` settings(default in the container).
+
+* `ALLOWED_HOSTS` - your Heroku host name
+
+* `DATABASE_URL` - must already exist from the database add-on
+
+* `SECRET_KEY` - a Django settings [secret key](https://docs.djangoproject.com/en/3.0/ref/settings/#secret-key)
+
+* `TELEGRAM_SECRET_PATH` - secret path(optional) that will be added to webhook API to make sure that the Webhook request comes from Telegram. [docs](https://core.telegram.org/bots/api#setwebhook)
+
+* `TELEGRAM_TOKEN` - token that you get from BotFather in the Telegram
+
+### Deployment to Heroku
+
+1. Login to your heroku account
+
+    `heroku login`
+
+2. Set heroku git
+
+    `heroku git:remote -a <app_name>`
+
+3. Set `container` type of deployment instead of `buildpacks`
+
+    `heroku stack:set container -a <app_name>`
+
+4. Push project to heroku
+
+    `git push heroku master`
