@@ -9,8 +9,10 @@ BASE_CURRENCY = 'USD'
 
 
 def load_latest_currency_rates(force_reload=False) -> Currency.objects:
+    # ToDo: to think maybe caching not required or use more fast storage
     # if less than 10 minutes since last update, don't make new request
-    if force_reload or (timezone.now() - Currency.objects.latest('updated').updated) > timedelta(minutes=10):
+    latest_currency = Currency.objects.order_by('-updated').first()
+    if force_reload or not latest_currency or (timezone.now() - latest_currency.updated) > timedelta(minutes=10):
         response = requests.get(f'{EXCHANGE_RATES_API_URL}latest', params={'base': 'USD'})
         data = response.json()
         date = datetime.strptime(data['date'], '%Y-%m-%d')

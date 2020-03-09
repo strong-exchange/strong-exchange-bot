@@ -71,6 +71,15 @@ class TestCurrency(TestCase):
         self.assertEqual(str(currencies[0].rate), '1.3349142649')
 
     @responses.activate
+    def test_load_currency_still_work_with_empty_database(self):
+        Currency.objects.all().delete()
+        currencies = load_latest_currency_rates()
+        self.assertEqual(33, Currency.objects.count())
+        self.assertEqual(currencies[0].base, 'USD')
+        self.assertEqual(currencies[0].target, 'CAD')
+        self.assertEqual(str(currencies[0].rate), '1.3349142649')
+
+    @responses.activate
     def test_load_currency_just_once(self):
         currency_qty = Currency.objects.count()
 
