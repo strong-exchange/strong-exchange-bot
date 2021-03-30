@@ -14,32 +14,32 @@ Ready for use an instance of this bot you can find in Telegram under the name [@
 2. In the Postgres create a user and a database. Don't forget set this information to settings.
 
 3. Install the requirements
-    
-    `pip install -r requirments.txt`
- 
+
+   `pip install -r requirments.txt`
+
 4. Keep in mind for correct work you must pass at least TELEGRAM_TOKEN to environment variables
-    
-    `export TELEGRAM_TOKEN=_your_token_`
-       
+
+   `export TELEGRAM_TOKEN=_your_token_`
+
 5. Run the test server
 
-    `python currency_bot/manage.py runserver`
-    
+   `python currency_bot/manage.py runserver`
+
 6. For expose the locale server port outside you can use [ngrok](https://ngrok.com/).
-    
+
 7. For registering the webhook you can use next command
 
-    `python currency_bot/manage.py set_telegram_webhook https://example.com/`
+   `python currency_bot/manage.py set_telegram_webhook https://example.com/`
 
 ### Development in the container
 
 1. Build the image
- 
-    `docker build -f Dockerfile . --tag currency-bot`
+
+   `docker build -f Dockerfile . --tag currency-bot`
 
 2. Run a container with the host network
 
-    `docker run --rm -it --network host currency-bot` 
+   `docker run --rm -it --network host currency-bot`
 
 ## Deployment
 
@@ -61,20 +61,20 @@ Don't forget to set the next environment variables if you use `currency_bot.sett
 
 1. Login to your Heroku account
 
-    `heroku login`
+   `heroku login`
 
 2. Set Heroku git
 
-    `heroku git:remote -a <app_name>`
+   `heroku git:remote -a <app_name>`
 
 3. Set `container` type of deployment instead of `buildpacks`
 
-    `heroku stack:set container -a <app_name>`
+   `heroku stack:set container -a <app_name>`
 
 4. Push project to Heroku
 
-    `git push heroku master`
+   `git push heroku master`
 
 5. Register webhook, using Heroku console(also you local environment with same settings and environment variables)
 
-    `python3 currency_bot/manage.py set_telegram_webhook https://strong-currency.herokuapp.com/`
+   `python3 currency_bot/manage.py set_telegram_webhook https://strong-currency.herokuapp.com/`
