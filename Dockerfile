@@ -1,4 +1,4 @@
-FROM ubuntu:19.10
+FROM ubuntu:20.04
 ENV PYTHONBUFFERED=1
 
 # Heroku set the PORT dynamically at runtime
@@ -6,7 +6,8 @@ EXPOSE 8000
 ENV PORT=8000 \
     DJANGO_SETTINGS_MODULE=currency_bot.settings.container
 
-RUN apt-get update && apt-get install -y nginx build-essential python3-dev python3-pip python3-setuptools python3-wheel
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --no-install-suggests -y \
+    nginx python3-pip
 WORKDIR /app
 
 # forward request and error logs to docker log collector
