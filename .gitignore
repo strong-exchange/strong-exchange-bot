@@ -1,4 +1,5 @@
 .idea/
+.envrc
 *.pyc
 secrets.txt
 media/

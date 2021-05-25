@@ -1,9 +1,9 @@
-import json
 from decimal import Decimal
 from datetime import date, timedelta
 import responses
 from django.test import TestCase
 from django.utils import timezone
+from django.conf import settings
 from currency.helpers import parse_exchange_line, parse_history_line
 from .models import Currency
 from .logic import load_latest_currency_rates, get_exchange_rate, get_currency_history
@@ -23,7 +23,7 @@ class TestCurrency(TestCase):
     def setUp(self) -> None:
         responses.add(
             responses.GET,
-            'https://api.exchangeratesapi.io/latest?base=USD',
+            f'{settings.EXCHANGE_RATES_API_URL}latest?base=USD',
             json=self.latest,
             content_type='application/json'
         )
@@ -168,7 +168,7 @@ class TestCurrencyHistory(TestCase):
     def setUp(self) -> None:
         responses.add(
             responses.GET,
-            'https://api.exchangeratesapi.io/history?base=USD&symbols=USD%2CCAD&start_at=2019-11-27&end_at=2019-12-03',
+            f'{settings.EXCHANGE_RATES_API_URL}history?base=USD&symbols=USD%2CCAD&start_at=2019-11-27&end_at=2019-12-03',
             json={
                 "rates": {
                     "2019-11-27": {"CAD": 1.3266418385, "USD": 1.0},
@@ -207,7 +207,7 @@ class TestCurrencyHistory(TestCase):
         get_currency_history(['USD', 'CAD'], date(2019, 11, 27), date(2019, 12, 3))
 
         self.assertEqual(
-            'https://api.exchangeratesapi.io/history?base=USD&symbols=USD%2CCAD&start_at=2019-11-27&end_at=2019-12-03',
+            f'{settings.EXCHANGE_RATES_API_URL}history?base=USD&symbols=USD%2CCAD&start_at=2019-11-27&end_at=2019-12-03',
             responses.calls[0].request.url
         )
 
