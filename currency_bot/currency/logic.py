@@ -2,9 +2,9 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 import requests
 from django.utils import timezone
+from django.conf import settings
 from .models import Currency
 
-EXCHANGE_RATES_API_URL = 'https://api.exchangeratesapi.io/'
 BASE_CURRENCY = 'USD'
 
 
@@ -13,7 +13,7 @@ def load_latest_currency_rates(force_reload=False) -> Currency.objects:
     # if less than 10 minutes since last update, don't make new request
     latest_currency = Currency.objects.order_by('-updated').first()
     if force_reload or not latest_currency or (timezone.now() - latest_currency.updated) > timedelta(minutes=10):
-        response = requests.get(f'{EXCHANGE_RATES_API_URL}latest', params={'base': 'USD'})
+        response = requests.get(f'{settings.EXCHANGE_RATES_API_URL}latest', params={'base': 'USD'})
         data = response.json()
         date = datetime.strptime(data['date'], '%Y-%m-%d')
         for currency, value in data['rates'].items():
@@ -55,5 +55,5 @@ def get_currency_history(currencies, from_, to):
         'start_at': from_,
         'end_at': to
     }
-    response = requests.get(f'{EXCHANGE_RATES_API_URL}history', params=params)
+    response = requests.get(f'{settings.EXCHANGE_RATES_API_URL}history', params=params)
     return response.json()

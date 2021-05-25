@@ -4,4 +4,5 @@ from .models import Currency
 
 @admin.register(Currency)
 class CurrencyAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('base', 'target', 'rate', 'date',)
+    list_filter = ('base', 'target', 'date', 'created',)
