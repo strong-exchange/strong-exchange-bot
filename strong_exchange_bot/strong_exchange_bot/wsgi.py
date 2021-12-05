@@ -1,5 +1,5 @@
 """
-WSGI config for currency_bot project.
+WSGI config for strong_exchange_bot project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'currency_bot.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'strong_exchange_bot.settings')
 
 application = get_wsgi_application()
