@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Update
+
+
+@admin.register(Update)
+class UpdateAdmin(admin.ModelAdmin):
+    fields = ('id', 'update_id',)
