@@ -23,13 +23,13 @@ Ready for use an instance of this bot you can find in Telegram under the name [@
 
 5. Run the test server
 
-   `python currency_bot/manage.py runserver`
+   `python strong_exchange_bot/manage.py runserver`
 
 6. For expose the locale server port outside you can use [ngrok](https://ngrok.com/).
 
 7. For registering the webhook you can use next command
 
-   `python currency_bot/manage.py set_telegram_webhook https://example.com/`
+   `python strong_exchange_bot/manage.py set_telegram_webhook https://example.com/`
 
 ### Development in the container
 
@@ -45,7 +45,7 @@ Ready for use an instance of this bot you can find in Telegram under the name [@
 
 ### Settings
 
-Don't forget to set the next environment variables if you use `currency_bot.settings.container` settings(default in the container).
+Don't forget to set the next environment variables if you use `strong_exchange_bot.settings.container` settings(default in the container).
 
 * `ALLOWED_HOSTS` - your Heroku host name
 
@@ -77,4 +77,4 @@ Don't forget to set the next environment variables if you use `currency_bot.sett
 
 5. Register webhook, using Heroku console(also you local environment with same settings and environment variables)
 
-   `python3 currency_bot/manage.py set_telegram_webhook https://strong-exchange-bot.herokuapp.com/`
+   `python3 strong_exchange_bot/manage.py set_telegram_webhook https://strong-exchange-bot.herokuapp.com/`
