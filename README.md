@@ -3,7 +3,7 @@
 ## What is it
 
 It's a telegram bot that can offer various information about the rate of currencies.
-Ready for use an instance of this bot you can find in Telegram under the name [@StrongCurrencyBot](https://t.me/StrongCurrencyBot).
+Ready for use an instance of this bot you can find in Telegram under the name [@StrongExchangeBot](https://t.me/StrongExchangeBot).
 
 ## Development
 
@@ -77,4 +77,4 @@ Don't forget to set the next environment variables if you use `currency_bot.sett
 
 5. Register webhook, using Heroku console(also you local environment with same settings and environment variables)
 
-   `python3 currency_bot/manage.py set_telegram_webhook https://strong-currency.herokuapp.com/`
+   `python3 currency_bot/manage.py set_telegram_webhook https://strong-exchange-bot.herokuapp.com/`
