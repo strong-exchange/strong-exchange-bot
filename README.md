@@ -57,6 +57,8 @@ Don't forget to set the next environment variables if you use `strong_exchange_b
 
 * `TELEGRAM_TOKEN` - token that you get from BotFather in the Telegram
 
+* `LOGLEVEL` - by default loglevel INFO, but you could set a different level
+
 ### Deployment to Heroku
 
 1. Login to your Heroku account
