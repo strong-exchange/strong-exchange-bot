@@ -45,7 +45,7 @@ Ready for use an instance of this bot you can find in Telegram under the name [@
 
 ### Settings
 
-Don't forget to set the next environment variables if you use `strong_exchange_bot.settings.container` settings(default in the container).
+Don't forget to set the next environment variables.
 
 * `ALLOWED_HOSTS` - your Heroku host name
 
