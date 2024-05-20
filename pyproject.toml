@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "strong-exchange-bot"
+version = "0.1.0"
+description = ""
+authors = ["Egor Poderiagin <egor@crazyrussian.pro>"]
+license = "GPL-3.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+dj-database-url = "2.1.0"
+django = "5.0.6"
+matplotlib = "3.9.0"
+requests = "2.31.0"
+psycopg = "3.1.19"
+
+[tool.poetry.group.dev.dependencies]
+responses = "0.25.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

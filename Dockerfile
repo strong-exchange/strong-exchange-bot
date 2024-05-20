@@ -1,4 +1,11 @@
-FROM ubuntu:20.04
+FROM python as poetry-requirements-export
+WORKDIR /app
+RUN pip install poetry
+COPY backend/pyproject.toml backend/poetry.lock ./
+RUN poetry export -f requirements.txt --output requirements.txt
+
+
+FROM ubuntu:24.04
 ENV PYTHONBUFFERED=1
 
 # Heroku set the PORT dynamically at runtime
@@ -14,7 +21,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 
 WORKDIR /app/strong_exchange_bot
-COPY requirements.txt ./
+COPY --from=poetry-requirements-export /app/requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY containers/nginx_server.conf /etc/nginx/sites-enabled/default
