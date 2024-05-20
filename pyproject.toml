@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "strong-exchange-bot"
 version = "0.1.0"
-description = ""
+description = "Bot that can offer various information about the rate of currencies."
 authors = ["Egor Poderiagin <egor@crazyrussian.pro>"]
 license = "GPL-3.0"
 readme = "README.md"
@@ -12,7 +12,8 @@ dj-database-url = "2.1.0"
 django = "5.0.6"
 matplotlib = "3.9.0"
 requests = "2.31.0"
-psycopg = "3.1.19"
+psycopg = {extras = ["binary", "pool"], version = "^3.1.19"}
+gunicorn = "22.0.0"
 
 [tool.poetry.group.dev.dependencies]
 responses = "0.25.0"
