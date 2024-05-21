@@ -8,4 +8,4 @@ build:
 release:
   image: web
   command:
-    - python3 manage.py migrate --noinput --settings strong_exchange_bot.settings.container
+    - python3 manage.py migrate --noinput --settings strong_exchange_bot.settings
