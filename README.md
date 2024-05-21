@@ -9,13 +9,13 @@ Ready for use an instance of this bot you can find in Telegram under the name [@
 
 ### Local development
 
-1. You must have installed the python 3.7 and the Postgres
+1. You must have installed the python 3.12 and the Postgres
 
 2. In the Postgres create a user and a database. Don't forget set this information to settings.
 
 3. Install the requirements
 
-   `pip install -r requirments.txt`
+   `poetry install --sync`
 
 4. Keep in mind for correct work you must pass at least TELEGRAM_TOKEN to environment variables
 
@@ -59,7 +59,7 @@ Don't forget to set the next environment variables.
 
 * `LOGLEVEL` - by default loglevel INFO, but you could set a different level
 
-### Deployment to Heroku
+### Deployment to Heroku (not used)
 
 1. Login to your Heroku account
 
